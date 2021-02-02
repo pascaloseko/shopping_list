@@ -17,7 +17,7 @@ func CreateUserTable() {
 		name varchar(100),
 		email varchar(30) UNIQUE,
 		password varchar(100),
-		register_date timestamp
+		register_date timestamp default current_timestamp
 	)
 	`)
 }
