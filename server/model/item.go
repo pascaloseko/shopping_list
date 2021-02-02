@@ -2,7 +2,7 @@ package model
 
 // User struct
 type User struct {
-	ID           int    `json:"id"`
+	ID           uint64 `json:"id"`
 	UserName     string `json:"username"`
 	Email        string `json:"email"`
 	Password     string `json:"-"`
@@ -11,7 +11,7 @@ type User struct {
 
 // Item struct
 type Item struct {
-	ID   int    `json:"id"`
+	ID   uint64 `json:"id"`
 	Name string `json:"name"`
 	Date string `json:"date"`
 }
