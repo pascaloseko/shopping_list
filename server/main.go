@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gofiber/fiber/middleware"
 	"log"
 
 	"github.com/gofiber/fiber"
@@ -20,10 +21,11 @@ func main() { // entry point to our program
 
 	app := fiber.New() // call the New() method - used to instantiate a new Fiber App
 
-	// app.Use(middleware.Logger())
+	app.Use(middleware.Logger())
 
 	router.SetupRoutes(app)
 
-	app.Listen(3000) // listen/Serve the new Fiber app on port 3000
-
+	if err := app.Listen(3000); err != nil {
+		log.Println(err)
+	} // listen/Serve the new Fiber app on port 3000
 }
