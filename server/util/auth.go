@@ -34,7 +34,7 @@ func (j *JwtWrapper) GenerateToken(email string) (signedToken string, err error)
 	if err != nil {
 		return "", err
 	}
-	return
+	return signedToken, nil
 }
 
 // ValidateToken validates the jwt token

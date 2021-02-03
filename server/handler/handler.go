@@ -2,16 +2,14 @@ package handler
 
 import (
 	"database/sql"
+	"github.com/pascaloseko/shopping_list/server/util"
 	"log"
 
 	"github.com/gofiber/fiber"
 	"github.com/pascaloseko/shopping_list/server/database"
 	"github.com/pascaloseko/shopping_list/server/model"
-	"github.com/pascaloseko/shopping_list/server/util"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var user *model.User
 
 // LoginPayload login body
 type LoginPayload struct {
@@ -209,81 +207,60 @@ func DeleteItem(c *fiber.Ctx) {
 
 // Register	user
 func Register(c *fiber.Ctx) {
-	user := new(model.User)
-	check := isUser()
-	if check {
+	var user model.User
+	if err := c.BodyParser(&user); err != nil {
 		c.Status(400).JSON(&fiber.Map{
 			"success": false,
-			"message": "User already exists",
+			"message": err.Error(),
 		})
 		return
 	}
-
-	if err := c.BodyParser(user); err != nil {
-		c.Status(400).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
-		return
-	}
-
-	// insert user to db
-	query := "INSERT INTO users (name, email, password) VALUES ($1, $2, $3) returning id, name, register_date"
-	stmt, err := database.DB.Prepare(query)
+	response, err := user.UserRegister()
 	if err != nil {
 		c.Status(500).JSON(&fiber.Map{
 			"success": false,
 			"message": err,
 		})
-		return
 	}
-
-	defer stmt.Close()
-	if err := stmt.QueryRow(user.UserName, user.Email, Encrypt(user.Password)).Scan(&user.ID, &user.UserName, &user.Email, &user.RegisterDate); err != nil {
-		c.Status(500).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
-		return
-	}
-
 	// return item in json format
 	if err := c.Status(201).JSON(&fiber.Map{
 		"success": true,
 		"message": "User added successfully",
-		"item":    user,
+		"item":    response,
 	}); err != nil {
 		c.Status(500).JSON(&fiber.Map{
 			"success": false,
-			"message": err,
+			"message": err.Error(),
 		})
 	}
 }
 
 // LoginUser handler
 func LoginUser(c *fiber.Ctx) {
-	userPayload := new(model.User)
-	if err := c.BodyParser(userPayload); err != nil {
+	var (
+		payload LoginPayload
+		user    model.User
+	)
+	if err := c.BodyParser(&payload); err != nil {
 		c.Status(400).JSON(&fiber.Map{
 			"success": false,
-			"message": err,
+			"message": err.Error(),
 		})
 		return
 	}
-	err := database.DB.QueryRow("SELECT id, password, name, register_date FROM users WHERE email=$1", userPayload.Email).Scan(&user.ID, &user.UserName, &user.RegisterDate)
+	err := database.DB.QueryRow("SELECT id, email, name, register_date, password FROM users WHERE email=$1", payload.Email).Scan(&user.ID, &user.Email, &user.UserName, &user.RegisterDate, &user.Password)
 	if err != nil {
 		c.Status(404).JSON(&fiber.Map{
 			"success": false,
-			"message": err,
+			"message": err.Error(),
 		})
 		return
 	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userPayload.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(payload.Password))
 	if err != nil {
 		c.Status(401).JSON(&fiber.Map{
 			"success": false,
-			"message": "invalid user credentials",
+			"message": err.Error(),
 		})
 		return
 	}
@@ -292,7 +269,6 @@ func LoginUser(c *fiber.Ctx) {
 		Issuer:          "AuthService",
 		ExpirationHours: 24,
 	}
-
 	signedToken, err := jwtWrapper.GenerateToken(user.Email)
 	if err != nil {
 		c.Status(500).JSON(&fiber.Map{
@@ -308,26 +284,6 @@ func LoginUser(c *fiber.Ctx) {
 
 	c.Status(200).JSON(&fiber.Map{
 		"success": true,
-		"message": tokenResponse,
+		"message": tokenResponse.Token,
 	})
-
-	return
-}
-
-// IsUser check if user is registered
-func isUser() (available bool) {
-	var num int
-	database.DB.QueryRow("SELECT COUNT(*) from users WHERE email=$1 LIMIT 1", user.Email).Scan(&num)
-	if num == 0 {
-		available = false
-	}
-	available = true
-	return
-}
-
-// Encrypt encypts a string with sha1 algorithm
-func Encrypt(plaintext string) (cryptoText string) {
-	hashPassword, _ := bcrypt.GenerateFromPassword([]byte(plaintext), bcrypt.DefaultCost)
-	cryptoText = string(hashPassword)
-	return
 }
