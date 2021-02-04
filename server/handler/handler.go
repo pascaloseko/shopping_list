@@ -237,7 +237,7 @@ func Register(c *fiber.Ctx) {
 	if err := c.Status(201).JSON(&fiber.Map{
 		"success": true,
 		"message": "User added successfully",
-		"item":    response,
+		"user":    response,
 	}); err != nil {
 		c.Status(500).JSON(&fiber.Map{
 			"success": false,
