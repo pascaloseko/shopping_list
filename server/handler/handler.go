@@ -2,8 +2,9 @@ package handler
 
 import (
 	"database/sql"
-	"github.com/pascaloseko/shopping_list/server/util"
 	"log"
+
+	"github.com/pascaloseko/shopping_list/server/util"
 
 	"github.com/gofiber/fiber"
 	"github.com/pascaloseko/shopping_list/server/database"
@@ -81,6 +82,16 @@ func GetAllItems(c *fiber.Ctx) {
 			return
 		}
 		result.Items = append(result.Items, item)
+	}
+
+	if len(result.Items) == 0 {
+		result.Items = make([]model.Item, 0)
+		c.Status(200).JSON(&fiber.Map{
+			"success": true,
+			"message": "Empty items",
+			"products": result,
+		})
+		return
 	}
 
 	if err := c.JSON(&fiber.Map{

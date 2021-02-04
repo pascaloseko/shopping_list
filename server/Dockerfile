@@ -21,5 +21,5 @@ ENV GOPATH /go
 ENV PATH /go/bin:$PATH
 
 RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
-EXPOSE 3000
+EXPOSE 5000
 CMD ["./main"]
