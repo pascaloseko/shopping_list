@@ -8,43 +8,48 @@ import { IItemReduxProps, IShoppingList } from '../types/interfaces'
 const ShoppingList = ({
     getItems,
     item,
-    // isAuthenticated,
+    isAuthenticated,
     deleteItem
-}: IShoppingList) => {
+  }: IShoppingList) => {
     useEffect(() => {
-        getItems();
+      getItems();
     }, [getItems]);
-
+  
     const handleDelete = (id: number) => {
-        deleteItem(id)
-    }
-
+      deleteItem(id);
+    };
+  
     const { items } = item;
     return (
-        <Container>
-            <ListGroup>
-                <TransitionGroup className="shopping-list">
-                    {items.map(({ id, name }) => (
-                        <CSSTransition key={id} timeout={500} classNames="fade">
-                            <ListGroupItem>
-                                <Button
-                                    className="remove-btn"
-                                    color="danger"
-                                    size="sm"
-                                    onClick={() => handleDelete(id)}
-                                >&times;</Button>
-                                {name}
-                            </ListGroupItem>
-                        </CSSTransition>
-                    ))}
-                </TransitionGroup>
-            </ListGroup>
-        </Container>
-    )
-}
-
-const mapStateToProps = (state: IItemReduxProps) => ({
-    item: state.item
-})
-
-export default connect(mapStateToProps, { getItems, deleteItem })(ShoppingList);
+      <Container>
+        <ListGroup>
+          <TransitionGroup className="shopping-list">
+            {items.map(({id, name }) => (
+              <CSSTransition key={id} timeout={500} classNames="fade">
+                <ListGroupItem>
+                  {isAuthenticated ? (
+                    <Button
+                      className="remove-btn"
+                      color="danger"
+                      size="sm"
+                      onClick={() => handleDelete(id)}
+                    >
+                      &times;
+                    </Button>
+                  ) : null}
+                  {name}
+                </ListGroupItem>
+              </CSSTransition>
+            ))}
+          </TransitionGroup>
+        </ListGroup>
+      </Container>
+    );
+  };
+  
+  const mapStateToProps = (state: IItemReduxProps) => ({
+    item: state.item,
+    isAuthenticated: state.auth.isAuthenticated
+  });
+  
+  export default connect(mapStateToProps, { getItems, deleteItem })(ShoppingList);

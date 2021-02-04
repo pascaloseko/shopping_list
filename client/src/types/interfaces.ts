@@ -74,7 +74,7 @@ export interface IItem {
 }
 
 export interface IItemModal {
-  // isAuthenticated: boolean;
+  isAuthenticated: boolean;
   addItem(item: IItem): void;
 }
 
@@ -90,7 +90,7 @@ export interface IShoppingList {
   };
   getItems(): void;
   deleteItem(id: number): void;
-  // isAuthenticated: boolean;
+  isAuthenticated: boolean;
 }
 
 // <<<<<<<<<<<>>>>>>>>>>>>

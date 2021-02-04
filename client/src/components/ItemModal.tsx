@@ -13,7 +13,7 @@ import { connect } from 'react-redux';
 import { addItem } from '../flux/actions/itemActions';
 import { IItemReduxProps, IItemModal, ITarget } from '../types/interfaces';
 
-const ItemModal = ({ addItem }: IItemModal) => {
+const ItemModal = ({ isAuthenticated, addItem }: IItemModal) => {
   const [modal, setModal] = useState(false);
   const [name, setName] = useState('');
 
@@ -24,7 +24,9 @@ const ItemModal = ({ addItem }: IItemModal) => {
   const handleOnSubmit = (e: any) => {
     e.preventDefault();
 
-    const newItem = { name };
+    const newItem = {
+      name
+    };
 
     // Add item via addItem action
     addItem(newItem);
@@ -34,6 +36,7 @@ const ItemModal = ({ addItem }: IItemModal) => {
 
   return (
     <div>
+      {isAuthenticated ? (
         <Button
           color="dark"
           style={{ marginBottom: '2rem' }}
@@ -41,6 +44,10 @@ const ItemModal = ({ addItem }: IItemModal) => {
         >
           Add Item
         </Button>
+      ) : (
+        <h4 className="mb-3 ml-4">Please log in to manage items</h4>
+      )}
+
       <Modal isOpen={modal} toggle={handleToggle}>
         <ModalHeader toggle={handleToggle}>Add To Shopping List</ModalHeader>
         <ModalBody>
@@ -67,7 +74,7 @@ const ItemModal = ({ addItem }: IItemModal) => {
 
 const mapStateToProps = (state: IItemReduxProps) => ({
   item: state.item,
-//   isAuthenticated: state.auth.isAuthenticated
+  isAuthenticated: state.auth.isAuthenticated
 });
 
 export default connect(mapStateToProps, { addItem })(ItemModal);
