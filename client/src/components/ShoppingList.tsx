@@ -1,0 +1,50 @@
+import React, { useEffect } from 'react';
+import { Container, ListGroup, ListGroupItem, Button } from 'reactstrap';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { connect } from 'react-redux'
+import { getItems, deleteItem } from '../flux/actions/itemActions'
+import { IItemReduxProps, IShoppingList } from '../types/interfaces'
+
+const ShoppingList = ({
+    getItems,
+    item,
+    // isAuthenticated,
+    deleteItem
+}: IShoppingList) => {
+    useEffect(() => {
+        getItems();
+    }, [getItems]);
+
+    const handleDelete = (id: number) => {
+        deleteItem(id)
+    }
+
+    const { items } = item;
+    return (
+        <Container>
+            <ListGroup>
+                <TransitionGroup className="shopping-list">
+                    {items.map(({ id, name }) => (
+                        <CSSTransition key={id} timeout={500} classNames="fade">
+                            <ListGroupItem>
+                                <Button
+                                    className="remove-btn"
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() => handleDelete(id)}
+                                >&times;</Button>
+                                {name}
+                            </ListGroupItem>
+                        </CSSTransition>
+                    ))}
+                </TransitionGroup>
+            </ListGroup>
+        </Container>
+    )
+}
+
+const mapStateToProps = (state: IItemReduxProps) => ({
+    item: state.item
+})
+
+export default connect(mapStateToProps, { getItems, deleteItem })(ShoppingList);
