@@ -11,7 +11,7 @@ export default function (state = initialState, action: IAction) {
   switch (action.type) {
     case GET_ERRORS:
       return {
-        msg: action.payload.message,
+        msg: action.payload.msg.message,
         status: action.payload.status,
         id: action.payload.id,
       };
