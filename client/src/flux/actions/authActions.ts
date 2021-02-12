@@ -57,7 +57,7 @@ export const login = ({ email, password }: IAuthFunction) => (
 
   axios
     .post("/public/login", body, config)
-    .then((res) =>
+    .then((res) => 
       dispatch({
         type: LOGIN_SUCCESS,
         payload: res.data,
@@ -94,7 +94,8 @@ export const tokenConfig = (getState: Function) => {
 
   // If token, add to headers
   if (token) {
-    config.headers["Authorization"] = token;
+    const typedToken = 'Bearer ' + token
+    config.headers["Authorization"] = typedToken;
   }
 
   return config;
