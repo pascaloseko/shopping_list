@@ -26,7 +26,13 @@ func main() { // entry point to our program
 
 	router.SetupRoutes(app)
 
-	if err := app.Listen(5000); err != nil {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "5000"
+	}
+
+	if err := app.Listen(port); err != nil {
 		log.Println(err)
 	} // listen/Serve the new Fiber app on port 3000
 }

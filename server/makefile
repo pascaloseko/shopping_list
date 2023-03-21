@@ -1,5 +1,8 @@
-run-local:
+up:
 	docker compose up
 
-run-build:
+build:
 	docker compose up --build
+
+down:
+	docker compose down
