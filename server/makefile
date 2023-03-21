@@ -1,5 +1,5 @@
 run-local:
-	docker-compose up
+	docker compose up
 
 run-build:
-	docker-compose up --build
+	docker compose up --build
