@@ -31,7 +31,7 @@ func main() { // entry point to our program
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		port = "5000"
+		port = ":5000"
 	}
 
 	if err := app.Listen(port); err != nil {
