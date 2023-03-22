@@ -44,7 +44,9 @@ func Authz() func(ctx *fiber.Ctx) {
 			})
 		}
 
-		ctx.Locals("email", claims.Email)
-		ctx.Next()
+		if claims != nil && claim.Email != "" {
+			ctx.Locals("email", claims.Email)
+			ctx.Next()
+		}
 	}
 }
