@@ -93,7 +93,7 @@ export const tokenConfig = (getState: Function) => {
   };
 
   // If token, add to headers
-  if (token) {
+  if (token !== "") {
     const typedToken = 'Bearer ' + token
     config.headers["Authorization"] = typedToken;
   }

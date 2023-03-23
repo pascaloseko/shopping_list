@@ -26,6 +26,7 @@ export const deleteItem = (id: number) => (
   dispatch: Function,
   getState: Function
   ) => {
+    console.info(id)
   axios.delete(`/api/${id}`, tokenConfig(getState)).then((res) => {
     dispatch({
       type: DELETE_ITEM,
